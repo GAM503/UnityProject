@@ -6,9 +6,21 @@ on:
   pull_request:
     branches:
       - master
+    types:
+      - opened
+      - synchronize
+      - ready_for_review
+    paths: — "Assets/**""
+      — "Packages/**"
+      — "ProjectSettings/**"
   push:
     branches:
       - master
+    paths: — "Assets/**"
+      — "Packages/**"
+      — "ProjectSettings/**"
+    tags:
+      - "v*"
 
 jobs:
   test:
