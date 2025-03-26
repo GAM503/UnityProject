@@ -24,6 +24,8 @@ public class PlayerController : MonoBehaviour
         get => Physics.CheckSphere(transform.TransformPoint(groundCheckOffset), groundCheckRadius, groundLayer);
     }
 
+    bool hasControl = true;
+
     void Awake()
     {
         mainCamera = Camera.main;
@@ -33,6 +35,10 @@ public class PlayerController : MonoBehaviour
 
     void Update()
     {
+        if (!hasControl)
+        {
+            return;
+        }
         HandleMovement();
         ApplyGravity();
         MovePlayer();
@@ -82,5 +88,17 @@ public class PlayerController : MonoBehaviour
     {
         Gizmos.color = Color.red;
         Gizmos.DrawSphere(transform.TransformPoint(groundCheckOffset), groundCheckRadius);
+    }
+
+    public void SetControl(bool value)
+    {
+        hasControl = value;
+        characterController.enabled = value;
+
+        if(!value)
+        {
+            animator.SetFloat("moveAmount", 0);
+            targetRotation = transform.rotation;
+        }
     }
 }
