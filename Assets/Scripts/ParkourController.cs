@@ -1,8 +1,7 @@
 using System.Collections;
-using Mono.Cecil.Cil;
-using UnityEditor.Animations;
+using System.Collections.Generic;
+using System.Threading;
 using UnityEngine;
-using UnityEngine.InputSystem;
 
 public class ParkourController : MonoBehaviour
 {
@@ -12,7 +11,10 @@ public class ParkourController : MonoBehaviour
 
     PlayerController playerController;
 
+    public List<ParkourAction> parkourActions;
+
     public bool inAction = false;
+
     void Awake()
     {
         environmentScanner = GetComponent<EnvironmentScanner>();
@@ -29,24 +31,48 @@ public class ParkourController : MonoBehaviour
 
             if (hitData.forwardHitFound)
             {
-                Debug.Log("Obstacle in front!");
-                StartCoroutine(DoParkourAction());
+                foreach (var action in parkourActions)
+                {
+                    if (action.CanPerformAction(hitData, transform.position.y))
+                    {
+                        StartCoroutine(DoParkourAction(action));
+                        break;
+                    }
+                }
             }
         }
         
     }
 
-    IEnumerator DoParkourAction()
+    IEnumerator DoParkourAction(ParkourAction action)
     {
         inAction = true;
         playerController.SetControl(false);
-        animator.CrossFade("Step Up", 0.2f);
+        animator.CrossFade(action.animationName, 0.2f);
         yield return null;
 
         var animState = animator.GetNextAnimatorStateInfo(0);
 
-        yield return new WaitForSeconds(animState.length);
+        float timer = 0;
+        while(timer <= animState.length)
+        {
+            timer += Time.deltaTime;
+            if(action.rotateToObstacle)
+                transform.rotation = Quaternion.RotateTowards(transform.rotation, action.targetRotation, playerController.rotationSpeed * Time.deltaTime);
+            if (action.enableTargetMatching)
+                MatchTarget(action);
+            yield return null;
+        }
         playerController.SetControl(true);
         inAction = false;
+    }
+
+    void MatchTarget(ParkourAction action)
+    {
+        if (animator.isMatchingTarget)
+        {
+            return;
+        }
+        animator.MatchTarget(action.MatchPos, transform.rotation, action.targetBodyPart, new MatchTargetWeightMask(action.matchTargetWeightMask,0), action.matchStarTime, action.matchTargetTime);
     }
 }
