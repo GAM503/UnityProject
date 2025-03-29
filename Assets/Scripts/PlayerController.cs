@@ -6,6 +6,8 @@ public class PlayerController : MonoBehaviour
     public float speed = 5f;
     public float rotationSpeed = 500f;
     public float animationDampTime = 0.2f;
+    public float fallAnimationDampTime = 0.2f;
+    public float jumpForce = 10f;
 
     [Header("Ground Check Settings")]
     public Vector3 groundCheckOffset;
@@ -21,7 +23,7 @@ public class PlayerController : MonoBehaviour
 
     private bool IsGrounded
     {
-        get => Physics.CheckSphere(transform.TransformPoint(groundCheckOffset), groundCheckRadius, groundLayer);
+        get => Physics.CheckSphere(transform.TransformPoint(groundCheckOffset), groundCheckRadius);
     }
 
     bool hasControl = true;
@@ -41,6 +43,7 @@ public class PlayerController : MonoBehaviour
         }
         HandleMovement();
         ApplyGravity();
+        HandleJump();
         MovePlayer();
     }
 
@@ -64,15 +67,28 @@ public class PlayerController : MonoBehaviour
         transform.rotation = Quaternion.RotateTowards(transform.rotation, targetRotation, rotationSpeed * Time.deltaTime);
     }
 
+    private void HandleJump()
+    {
+        if (IsGrounded && Input.GetKeyDown(KeyCode.Space))
+        {
+            verticalSpeed = jumpForce;
+            //animator.SetTrigger("jump");
+        }
+    }
+
     private void ApplyGravity()
     {
         if (IsGrounded)
         {
             verticalSpeed = -0.5f; // Small downward force to keep grounded
+            animator.SetBool("isFalling", false);
+            animator.SetFloat("fallAmount", 0, fallAnimationDampTime, Time.deltaTime);
         }
         else
         {
             verticalSpeed += Physics.gravity.y * Time.deltaTime;
+            animator.SetBool("isFalling", true);
+            animator.SetFloat("fallAmount", 1.2f, fallAnimationDampTime, Time.deltaTime);
         }
     }
 
@@ -86,7 +102,12 @@ public class PlayerController : MonoBehaviour
 
     private void OnDrawGizmosSelected()
     {
-        Gizmos.color = Color.red;
+        if(IsGrounded){
+            Gizmos.color = Color.white;
+        }
+        else{
+            Gizmos.color = Color.red;
+        }
         Gizmos.DrawSphere(transform.TransformPoint(groundCheckOffset), groundCheckRadius);
     }
 

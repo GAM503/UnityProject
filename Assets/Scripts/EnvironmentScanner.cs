@@ -3,8 +3,11 @@ using UnityEngine;
 public class EnvironmentScanner : MonoBehaviour
 {
     public Vector3 forwardRayOffset = new Vector3(0, 0.25f, 0);
+    public Vector3 downwardRayOffset = new Vector3(0, 0, 0);
     public float forwardRayLength = 0.8f;
     public float heightRayLength= 5f;
+    public float downwardsRayLength = 1.5f;
+
     public LayerMask obstacleLayer;
 
     public ObstaceHitData HasObstacleInFront()
@@ -24,6 +27,7 @@ public class EnvironmentScanner : MonoBehaviour
         }
         return hitData;
     }
+
 }
 
 public struct ObstaceHitData
