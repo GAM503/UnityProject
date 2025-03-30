@@ -55,7 +55,13 @@ public class PlayerController : MonoBehaviour
         Vector3 inputDirection = new Vector3(horizontal, 0, vertical).normalized;
         if (inputDirection.magnitude > 0)
         {
-            moveDirection = mainCamera.transform.rotation * inputDirection;
+            // Ignore the camera's X rotation by creating a new rotation with only the Y component
+            Vector3 cameraForward = mainCamera.transform.forward;
+            cameraForward.y = 0; // Remove the X rotation effect
+            cameraForward.Normalize();
+
+            Quaternion cameraRotation = Quaternion.LookRotation(cameraForward);
+            moveDirection = cameraRotation * inputDirection;
             targetRotation = Quaternion.LookRotation(moveDirection);
         }
         else
