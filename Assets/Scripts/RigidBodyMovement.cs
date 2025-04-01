@@ -4,8 +4,10 @@ public class RigidBodyMovement : MonoBehaviour
 {
     private Vector2 PlayerMouseInput;
     private Vector3 PlayerMovementInput;
+    [SerializeField] private LayerMask Ground;
     [SerializeField] private Rigidbody PlayerBody;
     [SerializeField] private Transform PlayerCamera;
+    [SerializeField] private Transform FeetTransform;
     [SerializeField] private float Speed;
     [SerializeField] private float JumpForce;
     [SerializeField] private float Sensitivity;
@@ -22,10 +24,13 @@ public class RigidBodyMovement : MonoBehaviour
     {
         Vector3 moveVector = transform.TransformDirection(PlayerMovementInput) * Speed;
         PlayerBody.linearVelocity = new Vector3(moveVector.x, PlayerBody.linearVelocity.y, moveVector.z);
-
+        if (Physics.CheckSphere(FeetTransform.position, 0.1f, Ground))
+        {
         if (Input.GetKeyDown(KeyCode.Space))
         {
             PlayerBody.AddForce(Vector3.up * JumpForce, ForceMode.Impulse);
+        }
+
         }
     }
     
