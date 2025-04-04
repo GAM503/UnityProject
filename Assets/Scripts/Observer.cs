@@ -28,7 +28,7 @@ public class Observer : MonoBehaviour
     {
         if (m_IsPlayerInRange)
         {
-            Vector3 direction = player.position - transform.parent.position + Vector3.up;
+            Vector3 direction = player.position - transform.parent.position + Vector3.up * 0.5f;
             Ray ray = new Ray(transform.parent.position, direction);
             RaycastHit raycastHit;
             
