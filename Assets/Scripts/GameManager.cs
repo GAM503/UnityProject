@@ -1,5 +1,5 @@
 using TMPro;
-using Unity.VisualScripting;
+using UnityEngine.SceneManagement;
 using UnityEngine;
 
 public class GameManager : MonoBehaviour
@@ -11,5 +11,10 @@ public class GameManager : MonoBehaviour
     {
         this.text.text = text;
         this.text.color = color;
+    }
+
+    public void ReloadScene()
+    {
+        SceneManager.LoadScene(SceneManager.GetActiveScene().name);
     }
 }

@@ -37,6 +37,7 @@ public class Observer : MonoBehaviour
                 if (raycastHit.collider.transform == player)
                 {
                     gameManager.UpdateTheText("Visible", Color.red);
+                    gameManager.ReloadScene();
                 }
                 else{
                     gameManager.UpdateTheText("Unvisible", Color.white);

@@ -32,6 +32,9 @@ public class PlayerController : MonoBehaviour
     private Animator animator;
     private CharacterController characterController;
 
+    public AudioSource footstepAudioSource;
+    public float pitch = 1f;
+
     private bool IsGrounded
     {
         get => Physics.CheckSphere(transform.TransformPoint(groundCheckOffset), groundCheckRadius);
@@ -45,6 +48,7 @@ public class PlayerController : MonoBehaviour
         mainCamera = Camera.main;
         animator = GetComponent<Animator>();
         characterController = GetComponent<CharacterController>();
+        footstepAudioSource = GetComponent<AudioSource>();
     }
 
     void Update()
@@ -56,6 +60,8 @@ public class PlayerController : MonoBehaviour
         HandleMovement();
         ApplyGravity();
         MovePlayer();
+
+        footstepAudioSource.pitch = pitch;
     }
 
     public void Crouch(CallbackContext context){
