@@ -12,6 +12,7 @@ public class Movement : MonoBehaviour
     private void FixedUpdate()
     {
         MyInput();
+        Debug.Log(movehorizontalInput + "this is horiz" + moveverticalInput + "this is vert");
         MovePlayer();
     }
 

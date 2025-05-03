@@ -1,45 +1,47 @@
-using UnityEngine;
+﻿using UnityEngine;
 
 public class RigidBodyMovement : MonoBehaviour
 {
-    private Vector2 PlayerMouseInput;
-    private Vector3 PlayerMovementInput;
+
     [SerializeField] private LayerMask Ground;
     [SerializeField] private Rigidbody PlayerBody;
-    [SerializeField] private Transform PlayerCamera;
     [SerializeField] private Transform FeetTransform;
-    [SerializeField] private float Speed;
+    public float speed = 5f;
     [SerializeField] private float JumpForce;
     [SerializeField] private float Sensitivity;
-    private float xRot;
+
+    private Vector3 moveDirection;
 
     void Update()
     {
-        PlayerMovementInput = new Vector3(Input.GetAxis("Horizontal"),0f, Input.GetAxis("Vertical"));
-        PlayerMouseInput = new Vector2(Input.GetAxis("Mouse X"), Input.GetAxis("Mouse Y"));
-        MovePlayer();
-        MovePlayerCamera();
-    }
-    private void MovePlayer()
-    {
-        Vector3 moveVector = transform.TransformDirection(PlayerMovementInput) * Speed;
-        PlayerBody.linearVelocity = new Vector3(moveVector.x, PlayerBody.linearVelocity.y, moveVector.z);
-        if (Physics.CheckSphere(FeetTransform.position, 0.1f, Ground))
+        float xHorizontal = Input.GetAxis("Horizontal");
+        float zVertical = Input.GetAxis("Vertical");
+
+        // Doğru yönlerde hareket
+        moveDirection = new Vector3(zVertical, 0f, -xHorizontal).normalized;
+
+        if (moveDirection.magnitude >= 0.1f)
         {
-        if (Input.GetKeyDown(KeyCode.Space))
-        {
-            PlayerBody.AddForce(Vector3.up * JumpForce, ForceMode.Impulse);
+            // Yöne doğru dönüş
+            Quaternion targetRotation = Quaternion.LookRotation(moveDirection);
+            transform.rotation = Quaternion.Slerp(transform.rotation, targetRotation, Time.deltaTime * 10f);
+
+            // Pozisyonu değiştir
+            transform.position += moveDirection * speed * Time.deltaTime;
         }
 
+        MovePlayer();
+    }
+
+    private void MovePlayer()
+    {
+        if (Physics.CheckSphere(FeetTransform.position, 0.1f, Ground))
+        {
+            if (Input.GetKeyDown(KeyCode.Space))
+            {
+                PlayerBody.AddForce(Vector3.up * JumpForce, ForceMode.Impulse);
+            }
         }
     }
-    
-    
-    private void MovePlayerCamera()
-    {
-        xRot -= PlayerMouseInput.y * Sensitivity;
-        transform.Rotate(0f, PlayerMouseInput.x * Sensitivity, 0f);
-        PlayerCamera.transform.localRotation = Quaternion.Euler(xRot, 0f, 0f);
-    }
-    
+
 }
